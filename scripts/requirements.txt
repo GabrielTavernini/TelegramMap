@@ -1,0 +1,6 @@
+Telethon
+asyncio
+numpy
+py-dotenv
+pandas
+scipy
