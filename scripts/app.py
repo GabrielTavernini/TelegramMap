@@ -16,9 +16,12 @@ api_id = os.getenv('API_ID1')
 api_hash = os.getenv('API_HASH1')
 client = TelegramClient('anon', api_id, api_hash)
 
-api_id2 = os.getenv('API_ID2')
-api_hash2 = os.getenv('API_HASH2')
-client2 = TelegramClient('anon2', api_id2, api_hash2)
+if int(os.getenv('TELEGRAM_CLIENTS')) > 1:
+  api_id2 = os.getenv('API_ID2')
+  api_hash2 = os.getenv('API_HASH2')
+  client2 = TelegramClient('anon2', api_id2, api_hash2)
+else:
+  client2 = client
 
 #Max 20m/s | 72km/h
 length = int(os.getenv('POINT_DISTANCE'))
@@ -51,15 +54,23 @@ async def getDist(latM, lonM, cl):
 async def mapSquare(dir):
   if dir:
     await getDist(-length/2, -length/2, client)
+    if int(os.getenv('TELEGRAM_CLIENTS')) < 2:
+      time.sleep(cooldown)
     await getDist(+length/2, -length/2, client2)
     time.sleep(cooldown)
     await getDist(-length/2, +length/2, client)
+    if int(os.getenv('TELEGRAM_CLIENTS')) < 2:
+      time.sleep(cooldown)
     await getDist(+length/2, +length/2, client2)
   else:
     await getDist(-length/2, +length/2, client)
+    if int(os.getenv('TELEGRAM_CLIENTS')) < 2:
+      time.sleep(cooldown)
     await getDist(+length/2, +length/2, client2)
     time.sleep(cooldown)
     await getDist(-length/2, -length/2, client)
+    if int(os.getenv('TELEGRAM_CLIENTS')) < 2:
+      time.sleep(cooldown)
     await getDist(+length/2, -length/2, client2)
   
   e = []
@@ -85,7 +96,10 @@ def updateCoords(i, j):
 async def executeCycle(i, j, dir):
   updateCoords(i, j)
   await mapSquare(dir)  
-  time.sleep(math.ceil(length*(multiplier-1)/20)+1)
+  if int(os.getenv('TELEGRAM_CLIENTS')) < 2:
+    time.sleep(math.ceil(length*(multiplier)/20)+1)
+  else:
+    time.sleep(math.ceil(length*(multiplier-1)/20)+1)
 
 async def main():
   i, j = start
@@ -107,7 +121,8 @@ async def main():
 if __name__ == '__main__':
   try:
     client.start()
-    client2.start()
+    if int(os.getenv('TELEGRAM_CLIENTS')) > 1:
+      client2.start()
     asyncio.get_event_loop().run_until_complete(main())
   except KeyboardInterrupt:
     print('Interrupted')
