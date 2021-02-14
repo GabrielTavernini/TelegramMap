@@ -1,5 +1,7 @@
 # TelegramMap
 Using Telegram's Near-By feature to geolocalize people around the globe 🧭  
+<br>
+Only the first three letters of each name are kept. If the user has no name then the the first 4 characters of the username are used ('@' included)
 
 # Installation
 ```bash
