@@ -36,6 +36,17 @@
         new Location("London", { lat: 51.509091, lon: -0.122881 }, 'data/locationsLondonAnon.csv'),
         new Location("Milan", { lat: 45.464263, lon: 9.190489 }, 'data/locationsMilanAnon.csv')
       ];
+
+      let query = window.location.href.split('?c=')[1]
+      let found = false;
+      for(let i = 0; i < locations.length && !found; i++) {
+        if(locations[i].name == query){
+          let tmp = locations[i];
+          locations[i] = locations[0];
+          locations[0] = tmp;
+          found = true;
+        }
+      }
     </script>
   </head>
   <body>
